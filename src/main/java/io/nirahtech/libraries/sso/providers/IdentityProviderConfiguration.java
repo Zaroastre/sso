@@ -1,13 +1,15 @@
 package io.nirahtech.libraries.sso.providers;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
+
+import io.nirahtech.libraries.sso.data.ClientId;
+import io.nirahtech.libraries.sso.data.ClientSecret;
 
 public record IdentityProviderConfiguration (
     String projectId,
-    String clientId,
-    String clientSecret,
+    ClientId clientId,
+    ClientSecret clientSecret,
     URI authorizationCodeUri,
     URI authorizationCodeRedirectUri,
     URI accessTokenUri,
@@ -18,28 +20,37 @@ public record IdentityProviderConfiguration (
 
     public static final class Builder {
         private String projectId;
-        private String clientId;
-        private String clientSecret;
+        private ClientId clientId;
+        private ClientSecret clientSecret;
         private URI authorizationCodeUri; 
         private URI accessTokenUri; 
         private URI userInfoUri; 
         private URI authorizationCodeRedirectUri; 
         private URI accessTokenRedirectUri; 
         private URI userInfoRedirectUri; 
-        private List<URI> redirectUris = new ArrayList<>();
 
         public Builder projectId(String projectId) {
             this.projectId = projectId;
             return this;
         }
 
-        public Builder clientId(String clientId) {
+        public Builder clientId(ClientId clientId) {
             this.clientId = clientId;
             return this;
         }
 
-        public Builder clientSecret(String clientSecret) {
+        public Builder clientSecret(ClientSecret clientSecret) {
             this.clientSecret = clientSecret;
+            return this;
+        }
+        
+        public Builder clientId(String clientId) {
+            this.clientId = new ClientId(clientId);
+            return this;
+        }
+
+        public Builder clientSecret(String clientSecret) {
+            this.clientSecret = new ClientSecret(clientSecret);
             return this;
         }
 
@@ -68,10 +79,6 @@ public record IdentityProviderConfiguration (
         }
         public Builder authorizationCodeRedirectUri(URI authorizationCodeRedirectUri) {
             this.authorizationCodeRedirectUri = authorizationCodeRedirectUri;
-            return this;
-        }
-        public Builder redirectUri(List<URI> redirectUri) {
-            this.redirectUris.addAll(redirectUri);
             return this;
         }
 

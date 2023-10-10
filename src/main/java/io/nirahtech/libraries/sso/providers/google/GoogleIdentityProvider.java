@@ -16,7 +16,11 @@ import com.google.gson.reflect.TypeToken;
 
 import io.nirahtech.libraries.sso.data.AccessToken;
 import io.nirahtech.libraries.sso.data.AuthorizationCode;
+import io.nirahtech.libraries.sso.data.AuthorizationGrantType;
+import io.nirahtech.libraries.sso.data.ClientId;
+import io.nirahtech.libraries.sso.data.ClientSecret;
 import io.nirahtech.libraries.sso.data.OAuth2User;
+import io.nirahtech.libraries.sso.data.ResponseType;
 import io.nirahtech.libraries.sso.exceptions.OAuth2Exception;
 import io.nirahtech.libraries.sso.providers.AbstractIdentityProvider;
 import io.nirahtech.libraries.sso.providers.IdentityProvider;
@@ -34,15 +38,15 @@ public class GoogleIdentityProvider extends AbstractIdentityProvider {
         super(configuration);
     }
 
-    private AccessToken retrieveAccessToken(final URI accessTokenEndpoint, final String clientId, final String clientSecret,
-            final AuthorizationCode authorizationCode, final URI redirectUrl, final String grantType) throws OAuth2Exception {
+    private AccessToken retrieveAccessToken(final URI accessTokenEndpoint, final ClientId clientId, final ClientSecret clientSecret,
+            final AuthorizationCode authorizationCode, final URI redirectUrl, final AuthorizationGrantType grantType) throws OAuth2Exception {
         String accessToken = null;
         final String requestBody = Map.of(
-                "client_id", clientId,
-                "client_secret", clientSecret,
+                "client_id", clientId.value(),
+                "client_secret", clientSecret.value(),
                 "code", authorizationCode.code(),
                 "redirect_uri", redirectUrl.toString(),
-                "grant_type", grantType).entrySet().stream()
+                "grant_type", grantType.name().toLowerCase()).entrySet().stream()
                 .map(entry -> entry.getKey() + "=" + URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8))
                 .collect(Collectors.joining("&"));
 
@@ -79,7 +83,7 @@ public class GoogleIdentityProvider extends AbstractIdentityProvider {
     private Map<String, Object> retrieveUserInfo(URI userInfoEndpoint, AccessToken accessToken) throws OAuth2Exception {
         final HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(userInfoEndpoint)
-                .header("Authorization", String.format("Bearer %s", accessToken.token()))
+                .header("Authorization", String.format("Bearer %s", accessToken.value()))
                 .GET()
                 .build();
         HttpResponse<String> response = null;
@@ -134,11 +138,11 @@ public class GoogleIdentityProvider extends AbstractIdentityProvider {
         stringBuilder.append("&");
         stringBuilder.append("access_type=online");
         stringBuilder.append("&");
-        stringBuilder.append(String.format("redirect_uri=%s", this.configuration.authorizationCodeRedirectUri()));
+        stringBuilder.append(String.format("redirect_uri=%s", this.configuration.authorizationCodeRedirectUri().toString()));
         stringBuilder.append("&");
-        stringBuilder.append(String.format("response_type=%s", "code"));
+        stringBuilder.append(String.format("response_type=%s", ResponseType.CODE.name().toLowerCase()));
         stringBuilder.append("&");
-        stringBuilder.append(String.format("client_id=%s", this.configuration.clientId()));
+        stringBuilder.append(String.format("client_id=%s", this.configuration.clientId().value()));
         return URI.create(stringBuilder.toString());
     }
 
@@ -153,7 +157,7 @@ public class GoogleIdentityProvider extends AbstractIdentityProvider {
                     this.configuration.clientSecret(), 
                     super.authorizationCode, 
                     this.configuration.authorizationCodeRedirectUri(), 
-                    "authorization_code");
+                    AuthorizationGrantType.AUTHORIZATION_CODE);
             userInfo = this.retrieveUserInfo(this.configuration.userInfoUri(), this.accessToken);
             this.user = new OAuth2User(null, null, userInfo);
             return this.user;
@@ -165,6 +169,7 @@ public class GoogleIdentityProvider extends AbstractIdentityProvider {
     public AuthorizationCode generateAuthorizationCode() throws OAuth2Exception {
         return this.retrieveAuthorizationCode();
     }
+    
     @Override
     public AccessToken generateAccessToken() throws OAuth2Exception {
         return this.retrieveAccessToken(
@@ -173,7 +178,7 @@ public class GoogleIdentityProvider extends AbstractIdentityProvider {
             this.configuration.clientSecret(), 
             super.authorizationCode, 
             this.configuration.accessTokenRedirectUri(), 
-            "authorization_code");
+            AuthorizationGrantType.AUTHORIZATION_CODE);
     }
 
     @Override
