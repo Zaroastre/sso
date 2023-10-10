@@ -35,13 +35,13 @@ public class GoogleIdentityProvider extends AbstractIdentityProvider {
     }
 
     private AccessToken retrieveAccessToken(final URI accessTokenEndpoint, final String clientId, final String clientSecret,
-            final AuthorizationCode authorizationCode, final String redirectUrl, final String grantType) throws OAuth2Exception {
+            final AuthorizationCode authorizationCode, final URI redirectUrl, final String grantType) throws OAuth2Exception {
         String accessToken = null;
         final String requestBody = Map.of(
                 "client_id", clientId,
                 "client_secret", clientSecret,
                 "code", authorizationCode.code(),
-                "redirect_uri", redirectUrl,
+                "redirect_uri", redirectUrl.toString(),
                 "grant_type", grantType).entrySet().stream()
                 .map(entry -> entry.getKey() + "=" + URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8))
                 .collect(Collectors.joining("&"));
@@ -122,6 +122,8 @@ public class GoogleIdentityProvider extends AbstractIdentityProvider {
         return new AuthorizationCode(code);
     }
 
+
+
     @Override
     public URI getAuthorizationCodeUri() {
         StringBuilder stringBuilder = new StringBuilder();
@@ -150,13 +152,28 @@ public class GoogleIdentityProvider extends AbstractIdentityProvider {
                     this.configuration.clientId(), 
                     this.configuration.clientSecret(), 
                     super.authorizationCode, 
-                    this.configuration.authorizationCodeRedirectUri().toString(), 
+                    this.configuration.authorizationCodeRedirectUri(), 
                     "authorization_code");
             userInfo = this.retrieveUserInfo(this.configuration.userInfoUri(), this.accessToken);
             this.user = new OAuth2User(null, null, userInfo);
             return this.user;
         });
 
+    }
+
+    @Override
+    public AuthorizationCode generateAuthorizationCode() throws OAuth2Exception {
+        return this.retrieveAuthorizationCode();
+    }
+    @Override
+    public AccessToken generateAccessToken() throws OAuth2Exception {
+        return this.retrieveAccessToken(
+            this.configuration.accessTokenUri(),
+            this.configuration.clientId(), 
+            this.configuration.clientSecret(), 
+            super.authorizationCode, 
+            this.configuration.accessTokenRedirectUri(), 
+            "authorization_code");
     }
 
     @Override

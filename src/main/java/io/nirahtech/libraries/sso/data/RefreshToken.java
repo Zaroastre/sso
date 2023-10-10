@@ -1,6 +1,6 @@
 package io.nirahtech.libraries.sso.data;
 
-public record AccessToken  (
+public record RefreshToken  (
     String value
 ) implements Token {
 
