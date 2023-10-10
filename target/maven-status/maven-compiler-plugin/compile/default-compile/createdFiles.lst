@@ -1,0 +1,13 @@
+io\nirahtech\libraries\sso\providers\AbstractIdentityProvider.class
+io\nirahtech\libraries\sso\providers\google\GoogleProfileMessage.class
+io\nirahtech\libraries\sso\providers\IdentityProviderConfiguration.class
+io\nirahtech\libraries\sso\providers\IdentityProviderFactory.class
+io\nirahtech\libraries\sso\providers\IdentityProviders.class
+io\nirahtech\libraries\sso\providers\google\GoogleProfileMessage$ProfileProperty.class
+io\nirahtech\libraries\sso\providers\IdentityProviderConfiguration$Builder.class
+io\nirahtech\libraries\sso\providers\google\GoogleIdentityProvider.class
+io\nirahtech\libraries\sso\providers\google\GoogleIdentityProvider$2.class
+io\nirahtech\libraries\sso\providers\IdentityProvider.class
+io\nirahtech\libraries\sso\providers\google\GoogleIdentityProvider$1.class
+io\nirahtech\libraries\sso\data\OAuth2User.class
+io\nirahtech\libraries\sso\exceptions\OAuth2Exception.class
