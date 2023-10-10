@@ -5,14 +5,16 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import io.nirahtech.libraries.sso.data.AccessToken;
+import io.nirahtech.libraries.sso.data.AuthorizationCode;
 import io.nirahtech.libraries.sso.data.OAuth2User;
 
 public abstract class AbstractIdentityProvider implements IdentityProvider {
     protected final IdentityProviderConfiguration configuration; 
     protected OAuth2User user = null;
 
-    protected String accessToken = null;
-    protected String authorizationCode = null;
+    protected AccessToken accessToken = null;
+    protected AuthorizationCode authorizationCode = null;
     protected final HttpClient httpClient;
 
     protected final ExecutorService executorService;

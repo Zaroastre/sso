@@ -1,15 +1,12 @@
 package io.nirahtech.libraries.sso.providers.google;
 
-import java.io.IOException;
 import java.net.URI;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -27,7 +24,7 @@ import io.nirahtech.libraries.sso.providers.IdentityProviderConfiguration;
 
 public class GoogleIdentityProvider extends AbstractIdentityProvider {
 
-    private static final Logger LOGGER = LogManager.getLogManager().getLogger("");
+    private static final Logger LOGGER = LogManager.getLogManager().getLogger(GoogleIdentityProvider.class.getName());
 
     public static final IdentityProvider configure(IdentityProviderConfiguration configuration) {
         return new GoogleIdentityProvider(configuration);
@@ -38,12 +35,12 @@ public class GoogleIdentityProvider extends AbstractIdentityProvider {
     }
 
     private AccessToken retrieveAccessToken(final URI accessTokenEndpoint, final String clientId, final String clientSecret,
-            final String code, final String redirectUrl, final String grantType) throws OAuth2Exception {
+            final AuthorizationCode authorizationCode, final String redirectUrl, final String grantType) throws OAuth2Exception {
         String accessToken = null;
         final String requestBody = Map.of(
                 "client_id", clientId,
                 "client_secret", clientSecret,
-                "code", code,
+                "code", authorizationCode.code(),
                 "redirect_uri", redirectUrl,
                 "grant_type", grantType).entrySet().stream()
                 .map(entry -> entry.getKey() + "=" + URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8))
@@ -74,15 +71,15 @@ public class GoogleIdentityProvider extends AbstractIdentityProvider {
         if (accessToken == null) {
             throw new OAuth2Exception("accessToken is null");
         }
-        return accessToken;
+        return new AccessToken(accessToken);
 
     }
 
 
-    private Map<String, Object> retrieveUserInfo(URI userInfoEndpoint, String accessToken) throws OAuth2Exception {
+    private Map<String, Object> retrieveUserInfo(URI userInfoEndpoint, AccessToken accessToken) throws OAuth2Exception {
         final HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(userInfoEndpoint)
-                .header("Authorization", String.format("Bearer %s", accessToken))
+                .header("Authorization", String.format("Bearer %s", accessToken.token()))
                 .GET()
                 .build();
         HttpResponse<String> response = null;
@@ -122,7 +119,7 @@ public class GoogleIdentityProvider extends AbstractIdentityProvider {
         //     exception.printStackTrace();
         //     throw new OAuth2Exception(exception);
         // }
-        return code;
+        return new AuthorizationCode(code);
     }
 
     @Override
