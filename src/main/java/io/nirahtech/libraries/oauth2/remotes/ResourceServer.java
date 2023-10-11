@@ -42,6 +42,10 @@ public final class ResourceServer {
         return userInfos;
     }
 
+    public URI getUri() {
+        return uri;
+    }
+
     public static final ResourceServer create(final URI uri) {
         return new ResourceServer(uri);
     }

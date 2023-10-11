@@ -1,15 +1,11 @@
 package io.nirahtech.libraries.oauth2.dto;
 
 import java.net.URI;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
 
 import io.nirahtech.libraries.oauth2.data.AuthorizationCode;
 import io.nirahtech.libraries.oauth2.data.AuthorizationGrantType;
 import io.nirahtech.libraries.oauth2.data.ClientId;
 import io.nirahtech.libraries.oauth2.data.ResponseType;
-import io.nirahtech.libraries.oauth2.data.Scope;
 
 public class AccessTokenRequest {
 

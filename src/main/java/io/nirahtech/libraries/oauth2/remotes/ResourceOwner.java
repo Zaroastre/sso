@@ -8,7 +8,6 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import io.nirahtech.libraries.oauth2.data.AuthorizationCode;
 import io.nirahtech.libraries.oauth2.dto.AuthorizationCodeRequest;
@@ -28,21 +27,7 @@ public final  class ResourceOwner {
 
         final StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(this.uri.toString());
-        stringBuilder.append("?");
-        stringBuilder.append("scope=");
-        stringBuilder.append(String.format("%s", request.getScopes().stream().map(scope -> scope.value()).collect(Collectors.joining(" "))));
-        request.getRedirectUri().ifPresent(redirectUri -> {
-            stringBuilder.append("&");
-            stringBuilder.append(String.format("redirect_uri=%s", redirectUri.toString()));
-        });
-        request.getState().ifPresent(state -> {
-            stringBuilder.append("&");
-            stringBuilder.append(String.format("state=%s", state));
-        });
-        stringBuilder.append("&");
-        stringBuilder.append(String.format("response_type=%s", request.getResponseType().name().toLowerCase()));
-        stringBuilder.append("&");
-        stringBuilder.append(String.format("client_id=%s", request.getClientId().value()));
+        stringBuilder.append(request.asURIParameters());
         
         final HttpRequest httpRequest = HttpRequest.newBuilder(URI.create(stringBuilder.toString()))
                 .GET()
@@ -60,6 +45,10 @@ public final  class ResourceOwner {
             }
         }
         return code;
+    }
+
+    public URI getUri() {
+        return uri;
     }
 
     public static final ResourceOwner create(final URI uri) {

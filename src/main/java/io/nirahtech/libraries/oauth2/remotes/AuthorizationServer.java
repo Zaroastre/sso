@@ -54,6 +54,10 @@ public final class AuthorizationServer {
         return code;
     }
 
+    public URI getUri() {
+        return uri;
+    }
+
     public static final AuthorizationServer create(final URI uri) {
         return new AuthorizationServer(uri);
     }

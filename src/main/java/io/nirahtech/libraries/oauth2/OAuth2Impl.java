@@ -1,5 +1,6 @@
 package io.nirahtech.libraries.oauth2;
 
+import java.net.URI;
 import java.util.Map;
 import java.util.Optional;
 
@@ -14,12 +15,14 @@ import io.nirahtech.libraries.oauth2.remotes.AuthorizationServer;
 import io.nirahtech.libraries.oauth2.remotes.ResourceOwner;
 import io.nirahtech.libraries.oauth2.remotes.ResourceServer;
 
-public final class OAuth2Impl implements OAuth2 {
+final class OAuth2Impl implements OAuth2 {
     private final OAuth2Configuration configuration;
 
     private final ResourceOwner resourceOwner;
     private final AuthorizationServer authorizationServer;
     private final ResourceServer resourceServer;
+
+    private URI nextURI = null; 
 
     OAuth2Impl(final OAuth2Configuration configuration) {
         this.configuration = configuration;
@@ -34,6 +37,7 @@ public final class OAuth2Impl implements OAuth2 {
                 .redirectUri(configuration.authorizationCodeRedirectUri())
                 .scopes(scopes)
                 .build();
+        this.nextURI = URI.create(this.resourceOwner.getUri().toString() + request.asURIParameters());
         final Optional<AuthorizationCode> code = this.resourceOwner.submitRequestForAuthorizationCode(request);
         return code.orElse(null);
     }
@@ -50,6 +54,11 @@ public final class OAuth2Impl implements OAuth2 {
         final UserInfoRequest request = new UserInfoRequest(accessToken, this.configuration.userInfoUri());
         final Optional<Map<String, Object>> userInfo = this.resourceServer.submitRequestForUserInfo(request);
         return userInfo.orElse(null);
+    }
+
+    @Override
+    public URI nextStep() {
+        return this.nextURI;
     }
 
 

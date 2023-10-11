@@ -38,7 +38,6 @@ class AppTest {
                 .redirectUri(URI.create("http://localhost:8080/webapp-1.0-SNAPSHOT/login/oauth2/code/google"))
                 .build();
         final Optional<AuthorizationCode> code = resourceOwner.submitRequestForAuthorizationCode(request);
-        // System.out.println(code);
         assertTrue(Objects.nonNull(code));
     }
 
@@ -66,10 +65,13 @@ class AppTest {
                 .clientId("723967256995-g04vhniaoe42t6vhup44ka0j1lrflh1r.apps.googleusercontent.com")
                 .projectId("ride4ever")
                 .authorizationCodeUri(URI.create("https://accounts.google.com/o/oauth2/v2/auth"))
+                .authorizationCodeRedirectUri(URI.create("http://localhost:8080/webapp-1.0-SNAPSHOT/login/oauth2/code/google"))
                 .accessTokenUri(URI.create("https://oauth2.googleapis.com/token"))
                 .userInfoUri(URI.create("https://openidconnect.googleapis.com/v1/userinfo"))
                 .build();
         OAuth2 oAuth2 = OAuth2Factory.create(configuration);
         assertTrue(Objects.nonNull(oAuth2));
+        oAuth2.generateAuthorizationCode(new Scope("openid"));
+        System.out.println(oAuth2.nextStep());
     }
 }

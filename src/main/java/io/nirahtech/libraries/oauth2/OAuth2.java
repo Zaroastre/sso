@@ -1,5 +1,6 @@
 package io.nirahtech.libraries.oauth2;
 
+import java.net.URI;
 import java.util.Map;
 
 import io.nirahtech.libraries.oauth2.data.AccessToken;
@@ -10,4 +11,6 @@ public sealed interface OAuth2 permits OAuth2Impl {
     AuthorizationCode generateAuthorizationCode(Scope... scopes);
     AccessToken generateAccessToken(AuthorizationCode authorizationCode);
     Map<String, Object> retrieveUserInfo(AccessToken accessToken);
+
+    URI nextStep();
 }

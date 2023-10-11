@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import io.nirahtech.libraries.oauth2.data.ClientId;
 import io.nirahtech.libraries.oauth2.data.ResponseType;
@@ -50,6 +51,28 @@ public class AuthorizationCodeRequest {
 
     public String getContentType() {
         return contentType;
+    }
+
+    public String asURIParameters() {
+        final StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("?");
+        if (!this.getScopes().isEmpty()) {
+            stringBuilder.append("scope=");
+            stringBuilder.append(String.format("%s", this.getScopes().stream().map(scope -> scope.value()).collect(Collectors.joining(" "))));
+        }
+        this.getRedirectUri().ifPresent(endpoint -> {
+            stringBuilder.append("&");
+            stringBuilder.append(String.format("redirect_uri=%s", endpoint.toString()));
+        });
+        this.getState().ifPresent(stateValue -> {
+            stringBuilder.append("&");
+            stringBuilder.append(String.format("state=%s", stateValue));
+        });
+        stringBuilder.append("&");
+        stringBuilder.append(String.format("response_type=%s", this.getResponseType().name().toLowerCase()));
+        stringBuilder.append("&");
+        stringBuilder.append(String.format("client_id=%s", this.getClientId().value()));
+        return stringBuilder.toString();
     }
 
     public static final Builder builder(ClientId clientId) {
