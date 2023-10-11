@@ -29,7 +29,8 @@ public final class ResourceServer {
                 .header("Authorization", String.format("Bearer: %s", request.getAccessToken().value()))
                 .build();
         HttpResponse<String> httpResponse = null;
-        try (final HttpClient httpClient = HttpClient.newHttpClient()) {
+        final HttpClient httpClient = HttpClient.newHttpClient();
+        try {
             httpResponse = httpClient.send(httpRequest, BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();

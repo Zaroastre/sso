@@ -22,7 +22,7 @@ final class OAuth2Impl implements OAuth2 {
     private final AuthorizationServer authorizationServer;
     private final ResourceServer resourceServer;
 
-    private URI nextURI = null; 
+    private URI fullAuthorizationUri = null; 
 
     OAuth2Impl(final OAuth2Configuration configuration) {
         this.configuration = configuration;
@@ -32,12 +32,12 @@ final class OAuth2Impl implements OAuth2 {
     }
 
     @Override
-    public final AuthorizationCode generateAuthorizationCode(final Scope... scopes) {
+    public final AuthorizationCode generateAuthorizationCode() {
         final AuthorizationCodeRequest request = AuthorizationCodeRequest.builder(this.configuration.clientId())
                 .redirectUri(configuration.authorizationCodeRedirectUri())
-                .scopes(scopes)
+                .scopes(configuration.scopes().toArray(new Scope[this.configuration.scopes().size()]))
                 .build();
-        this.nextURI = URI.create(this.resourceOwner.getUri().toString() + request.asURIParameters());
+        this.fullAuthorizationUri = URI.create(this.resourceOwner.getUri().toString() + request.asURIParameters());
         final Optional<AuthorizationCode> code = this.resourceOwner.submitRequestForAuthorizationCode(request);
         return code.orElse(null);
     }
@@ -57,9 +57,8 @@ final class OAuth2Impl implements OAuth2 {
     }
 
     @Override
-    public URI nextStep() {
-        return this.nextURI;
+    public URI generateFullAuthorizationEndpoint() {
+        return this.fullAuthorizationUri;
     }
-
 
 }

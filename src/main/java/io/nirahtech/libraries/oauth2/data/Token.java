@@ -1,5 +1,5 @@
 package io.nirahtech.libraries.oauth2.data;
 
-public interface Token {
+public sealed interface Token permits AccessToken, RefreshToken {
     String value();
 }

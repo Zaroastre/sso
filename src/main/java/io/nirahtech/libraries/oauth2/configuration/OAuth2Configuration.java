@@ -1,9 +1,12 @@
 package io.nirahtech.libraries.oauth2.configuration;
 
 import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
 
 import io.nirahtech.libraries.oauth2.data.ClientId;
 import io.nirahtech.libraries.oauth2.data.ClientSecret;
+import io.nirahtech.libraries.oauth2.data.Scope;
 
 public record OAuth2Configuration (
     String projectId,
@@ -14,7 +17,8 @@ public record OAuth2Configuration (
     URI accessTokenUri,
     URI accessTokenRedirectUri,
     URI userInfoUri,
-    URI userInfoRedirectUri
+    URI userInfoRedirectUri,
+    Set<Scope> scopes
 ) {
 
     public static final class Builder {
@@ -27,6 +31,7 @@ public record OAuth2Configuration (
         private URI authorizationCodeRedirectUri; 
         private URI accessTokenRedirectUri; 
         private URI userInfoRedirectUri; 
+        private Set<Scope> scopes = new HashSet<>(); 
 
         public Builder projectId(String projectId) {
             this.projectId = projectId;
@@ -80,6 +85,10 @@ public record OAuth2Configuration (
             this.authorizationCodeRedirectUri = authorizationCodeRedirectUri;
             return this;
         }
+        public Builder scopes(Scope... scopes) {
+            this.scopes.addAll(Set.of(scopes));
+            return this;
+        }
 
         public OAuth2Configuration build() {
             return new OAuth2Configuration(
@@ -91,7 +100,8 @@ public record OAuth2Configuration (
                 accessTokenUri,
                 accessTokenRedirectUri,
                 userInfoUri,
-                userInfoRedirectUri);
+                userInfoRedirectUri,
+                scopes);
         }
     }
 }

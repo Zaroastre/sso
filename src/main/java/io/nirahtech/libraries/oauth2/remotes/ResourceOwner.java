@@ -34,7 +34,8 @@ public final  class ResourceOwner {
                 .header("Content-Type", request.getContentType())
                 .build();
         HttpResponse<String> httpResponse = null;
-        try (final HttpClient httpClient = HttpClient.newHttpClient()) {
+        final HttpClient httpClient = HttpClient.newHttpClient();
+        try {
             httpResponse = httpClient.send(httpRequest, BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
