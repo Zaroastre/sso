@@ -11,18 +11,18 @@
   </parent>
 
   <groupId>io.nirahtech.libraries</groupId>
-  <artifactId>sso</artifactId>
+  <artifactId>oauth2</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <name>sso</name>
+  <name>oauth2</name>
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
 
   <scm>
-    <connection>scm:git:git@github.com:Zaroastre/sso.git</connection>
-    <developerConnection>scm:git:git@github.com:Zaroastre/sso.git</developerConnection>
+    <connection>scm:git:git@github.com:Zaroastre/oauth2.git</connection>
+    <developerConnection>scm:git:git@github.com:Zaroastre/oauth2.git</developerConnection>
     <tag>HEAD</tag>
-    <url>https://github.com/Zaroastre/sso</url>
+    <url>https://github.com/Zaroastre/oauth2</url>
   </scm>
 
   <dependencies>
