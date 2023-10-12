@@ -23,6 +23,7 @@ final class OAuth2Impl implements OAuth2 {
     private final ResourceServer resourceServer;
 
     private URI fullAuthorizationUri = null; 
+    private URI fullAccessTokenUri = null; 
 
     OAuth2Impl(final OAuth2Configuration configuration) {
         this.configuration = configuration;
@@ -44,7 +45,8 @@ final class OAuth2Impl implements OAuth2 {
     
     @Override
     public final AccessToken generateAccessToken(final AuthorizationCode authorizationCode) {
-        final AccessTokenRequest request = new AccessTokenRequest(this.configuration.clientId(), authorizationCode, this.configuration.accessTokenRedirectUri());
+        final AccessTokenRequest request = new AccessTokenRequest(this.configuration.clientId(), this.configuration.clientSecret(), authorizationCode, this.configuration.scopes(), this.configuration.accessTokenRedirectUri(), this.configuration.accessType());
+        this.fullAccessTokenUri = URI.create(this.authorizationServer.getUri().toString() + request.asURIParameters());
         final Optional<AccessToken> token = this.authorizationServer.submitRequestForAccessToken(request);
         return token.orElse(null);
     }
@@ -61,4 +63,8 @@ final class OAuth2Impl implements OAuth2 {
         return this.fullAuthorizationUri;
     }
 
+    @Override
+    public URI generateFullAccessTokenEndpoint() {
+        return this.fullAccessTokenUri;
+    }
 }

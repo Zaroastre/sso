@@ -18,7 +18,8 @@ public record OAuth2Configuration (
     URI accessTokenRedirectUri,
     URI userInfoUri,
     URI userInfoRedirectUri,
-    Set<Scope> scopes
+    Set<Scope> scopes,
+    String accessType
 ) {
 
     public static final class Builder {
@@ -30,7 +31,8 @@ public record OAuth2Configuration (
         private URI userInfoUri; 
         private URI authorizationCodeRedirectUri; 
         private URI accessTokenRedirectUri; 
-        private URI userInfoRedirectUri; 
+        private URI userInfoRedirectUri;
+        private String accessType;
         private Set<Scope> scopes = new HashSet<>(); 
 
         public Builder projectId(String projectId) {
@@ -50,6 +52,11 @@ public record OAuth2Configuration (
         
         public Builder clientId(String clientId) {
             this.clientId = new ClientId(clientId);
+            return this;
+        }
+        
+        public Builder accessType(String accessType) {
+            this.accessType = accessType;
             return this;
         }
 
@@ -101,7 +108,8 @@ public record OAuth2Configuration (
                 accessTokenRedirectUri,
                 userInfoUri,
                 userInfoRedirectUri,
-                scopes);
+                scopes,
+                accessType);
         }
     }
 }

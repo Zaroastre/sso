@@ -12,4 +12,5 @@ public sealed interface OAuth2 permits OAuth2Impl {
     Map<String, Object> retrieveUserInfo(AccessToken accessToken);
 
     URI generateFullAuthorizationEndpoint();
+    URI generateFullAccessTokenEndpoint();
 }

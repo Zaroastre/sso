@@ -59,16 +59,16 @@ public class AuthorizationCodeRequest {
         if (!this.getScopes().isEmpty()) {
             stringBuilder.append("scope=");
             stringBuilder.append(String.format("%s", this.getScopes().stream().map(scope -> scope.value()).collect(Collectors.joining(" "))));
+            stringBuilder.append("&");
         }
         this.getRedirectUri().ifPresent(endpoint -> {
-            stringBuilder.append("&");
             stringBuilder.append(String.format("redirect_uri=%s", endpoint.toString()));
+            stringBuilder.append("&");
         });
         this.getState().ifPresent(stateValue -> {
-            stringBuilder.append("&");
             stringBuilder.append(String.format("state=%s", stateValue));
+            stringBuilder.append("&");
         });
-        stringBuilder.append("&");
         stringBuilder.append(String.format("response_type=%s", this.getResponseType().name().toLowerCase()));
         stringBuilder.append("&");
         stringBuilder.append(String.format("client_id=%s", this.getClientId().value()));

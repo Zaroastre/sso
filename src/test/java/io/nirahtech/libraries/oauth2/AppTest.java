@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -12,6 +13,7 @@ import io.nirahtech.libraries.oauth2.configuration.OAuth2Configuration;
 import io.nirahtech.libraries.oauth2.data.AccessToken;
 import io.nirahtech.libraries.oauth2.data.AuthorizationCode;
 import io.nirahtech.libraries.oauth2.data.ClientId;
+import io.nirahtech.libraries.oauth2.data.ClientSecret;
 import io.nirahtech.libraries.oauth2.data.Scope;
 import io.nirahtech.libraries.oauth2.dto.AccessTokenRequest;
 import io.nirahtech.libraries.oauth2.dto.AuthorizationCodeRequest;
@@ -53,8 +55,11 @@ class AppTest {
                 .create(URI.create("https://oauth2.googleapis.com/token"));
         final AccessTokenRequest request = new AccessTokenRequest(
                 CLIENT_ID,
+                new ClientSecret("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"),
                 new AuthorizationCode("4/0AfJohXn4a7kjYRM53SkC-lWEkf3xaktNAh0qJ2iFoj0y-ZYViJFP-tTMOZwba8T-I1tZsA"),
-                URI.create("http://localhost:8080/webapp-1.0-SNAPSHOT/login/oauth2/code/google"));
+                Set.of(new Scope("openid")),
+                URI.create("http://localhost:8080/webapp-1.0-SNAPSHOT/login/oauth2/code/google"),
+                "offline");
         final Optional<AccessToken> accessToken = authorizationServer.submitRequestForAccessToken(request);
         assertTrue(Objects.nonNull(accessToken));
     }
