@@ -39,6 +39,9 @@ public final class ResourceServer {
             if (!httpResponse.body().isEmpty()) {
                 userInfos = Optional.of(Map.of());
             }
+        } else if (Objects.nonNull(httpResponse)) {
+            System.out.println(this.uri);
+            System.out.println(httpResponse.body());
         }
         return userInfos;
     }

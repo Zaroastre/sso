@@ -55,7 +55,7 @@ final class OAuth2Impl implements OAuth2 {
     public final Map<String, Object> retrieveUserInfo(final AccessToken accessToken) {
         final UserInfoRequest request = new UserInfoRequest(accessToken, this.configuration.userInfoUri());
         final Optional<Map<String, Object>> userInfo = this.resourceServer.submitRequestForUserInfo(request);
-        return userInfo.orElse(null);
+        return userInfo.orElse(Map.of());
     }
 
     @Override

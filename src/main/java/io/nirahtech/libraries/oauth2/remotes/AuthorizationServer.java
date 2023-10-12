@@ -37,8 +37,6 @@ public final class AuthorizationServer {
         final StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(this.uri.toString());
         stringBuilder.append(request.asURIParameters());
-
-        System.out.println("The URL: " + stringBuilder.toString());
         
         final HttpRequest httpRequest = HttpRequest.newBuilder(URI.create(stringBuilder.toString()))
                 .POST(BodyPublishers.ofString(""))
