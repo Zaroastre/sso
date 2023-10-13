@@ -10,6 +10,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
 import io.nirahtech.libraries.oauth2.dto.UserInfoRequest;
 
 /**
@@ -22,9 +26,11 @@ public final class ResourceServer {
         this.uri = uri;
     }
 
-    public final Optional<Map<String, Object>> submitRequestForUserInfo(final UserInfoRequest request) {
-        Optional<Map<String, Object>> userInfos = Optional.empty();
-        final HttpRequest httpRequest = HttpRequest.newBuilder(this.uri)
+    public final Optional<Map<String, String>> submitRequestForUserInfo(final UserInfoRequest request) {
+        Optional<Map<String, String>> userInfos = Optional.empty();
+        StringBuilder builder = new StringBuilder(this.uri.toString());
+        builder.append("?access_token=").append(request.getAccessToken().value());
+        final HttpRequest httpRequest = HttpRequest.newBuilder(URI.create(builder.toString()))
                 .GET()
                 .header("Authorization", String.format("Bearer: %s", request.getAccessToken().value()))
                 .build();
@@ -37,7 +43,10 @@ public final class ResourceServer {
         }
         if (Objects.nonNull(httpResponse) && httpResponse.statusCode() >= 200 && httpResponse.statusCode() <= 299) {
             if (!httpResponse.body().isEmpty()) {
-                userInfos = Optional.of(Map.of());
+                System.out.println(httpResponse.body());
+                Gson gson = new GsonBuilder().create();
+                final Map<String, String> json = gson.fromJson(httpResponse.body(), new TypeToken<Map<String, String>>(){}.getType());
+                userInfos = Optional.of(json);
             }
         } else if (Objects.nonNull(httpResponse)) {
             System.out.println(this.uri);

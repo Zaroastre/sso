@@ -51,6 +51,7 @@ public final class AuthorizationServer {
         }
         if (Objects.nonNull(httpResponse) && httpResponse.statusCode() >= 200 && httpResponse.statusCode() <= 299) {
             if (!httpResponse.body().isEmpty()) {
+                System.out.println(httpResponse.body());
                 Gson gson = new GsonBuilder().create();
                 final Map<String, String> json = gson.fromJson(httpResponse.body(), new TypeToken<Map<String, String>>(){}.getType());
                 Set<Scope> scopes = Set.of(json.get("scope").split(" ")).stream().map(Scope::new).collect(Collectors.toSet());

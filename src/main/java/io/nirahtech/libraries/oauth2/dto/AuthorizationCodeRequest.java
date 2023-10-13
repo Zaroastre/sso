@@ -58,7 +58,7 @@ public class AuthorizationCodeRequest {
         stringBuilder.append("?");
         if (!this.getScopes().isEmpty()) {
             stringBuilder.append("scope=");
-            stringBuilder.append(String.format("%s", this.getScopes().stream().map(scope -> scope.value()).collect(Collectors.joining(" "))));
+            stringBuilder.append(String.format("%s", this.getScopes().stream().map(scope -> scope.value()).collect(Collectors.joining("%20"))));
             stringBuilder.append("&");
         }
         this.getRedirectUri().ifPresent(endpoint -> {

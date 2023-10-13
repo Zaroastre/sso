@@ -42,6 +42,7 @@ public final  class ResourceOwner {
         }
         if (Objects.nonNull(httpResponse) && httpResponse.statusCode() >= 200 && httpResponse.statusCode() <= 299) {
             if (!httpResponse.body().isEmpty()) {
+                System.out.println(httpResponse.body());
                 code = Optional.of(new AuthorizationCode(httpResponse.body()));
             }
         }
