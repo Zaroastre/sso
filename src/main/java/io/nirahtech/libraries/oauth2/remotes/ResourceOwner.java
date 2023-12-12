@@ -2,13 +2,14 @@ package io.nirahtech.libraries.oauth2.remotes;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Optional;
 
+import io.nirahtech.http.client.HttpClient;
+import io.nirahtech.http.common.HttpRequest;
+import io.nirahtech.http.common.HttpResponse;
+import io.nirahtech.http.common.HttpVerb;
 import io.nirahtech.libraries.oauth2.data.AuthorizationCode;
 import io.nirahtech.libraries.oauth2.dto.AuthorizationCodeRequest;
 
@@ -30,20 +31,26 @@ public final  class ResourceOwner {
         stringBuilder.append(request.asURIParameters());
         
         final HttpRequest httpRequest = HttpRequest.newBuilder(URI.create(stringBuilder.toString()))
-                .GET()
-                .header("Content-Type", request.getContentType())
+                .method(HttpVerb.GET)
+                .headers("Content-Type", request.getContentType())
                 .build();
-        HttpResponse<String> httpResponse = null;
+        HttpResponse httpResponse = null;
         final HttpClient httpClient = HttpClient.newHttpClient();
-        try {
-            httpResponse = httpClient.send(httpRequest, BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
+        httpResponse = httpClient.send(httpRequest);
+        // try {
+        // } catch (IOException | InterruptedException e) {
+        //     e.printStackTrace();
+        // }
         if (Objects.nonNull(httpResponse) && httpResponse.statusCode() >= 200 && httpResponse.statusCode() <= 299) {
-            if (!httpResponse.body().isEmpty()) {
-                System.out.println(httpResponse.body());
-                code = Optional.of(new AuthorizationCode(httpResponse.body()));
+            try {
+                if (httpResponse.body().available() > 0) {
+                    byte[] body = new byte[httpResponse.body().available()];
+                    httpResponse.body().read(body);
+                    code = Optional.of(new AuthorizationCode(new String(body, StandardCharsets.UTF_8)));
+                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
         }
         return code;

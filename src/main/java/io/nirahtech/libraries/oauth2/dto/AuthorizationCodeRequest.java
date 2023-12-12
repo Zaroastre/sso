@@ -1,6 +1,7 @@
 package io.nirahtech.libraries.oauth2.dto;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -58,7 +59,7 @@ public class AuthorizationCodeRequest {
         stringBuilder.append("?");
         if (!this.getScopes().isEmpty()) {
             stringBuilder.append("scope=");
-            stringBuilder.append(String.format("%s", this.getScopes().stream().map(scope -> scope.value()).collect(Collectors.joining("%20"))));
+            stringBuilder.append(String.format("%s", this.getScopes().stream().map(scope -> scope.getValue()).collect(Collectors.joining("%20"))));
             stringBuilder.append("&");
         }
         this.getRedirectUri().ifPresent(endpoint -> {
@@ -71,7 +72,7 @@ public class AuthorizationCodeRequest {
         });
         stringBuilder.append(String.format("response_type=%s", this.getResponseType().name().toLowerCase()));
         stringBuilder.append("&");
-        stringBuilder.append(String.format("client_id=%s", this.getClientId().value()));
+        stringBuilder.append(String.format("client_id=%s", this.getClientId().getValue()));
         return stringBuilder.toString();
     }
 
@@ -94,7 +95,7 @@ public class AuthorizationCodeRequest {
             return this;
         }
         public Builder scopes(final Scope... scopes) {
-            this.scopes.addAll(Set.of(scopes));
+            this.scopes.addAll(Arrays.asList(scopes));
             return this;
         }
         public Builder state(final String state) {

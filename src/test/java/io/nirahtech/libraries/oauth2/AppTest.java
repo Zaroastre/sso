@@ -3,9 +3,9 @@ package io.nirahtech.libraries.oauth2;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -57,7 +57,7 @@ class AppTest {
                 CLIENT_ID,
                 new ClientSecret("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"),
                 new AuthorizationCode("4/0AfJohXn4a7kjYRM53SkC-lWEkf3xaktNAh0qJ2iFoj0y-ZYViJFP-tTMOZwba8T-I1tZsA"),
-                Set.of(new Scope("openid")),
+                Arrays.asList(new Scope("openid")),
                 URI.create("http://localhost:8080/webapp-1.0-SNAPSHOT/login/oauth2/code/google"),
                 "offline");
         final Optional<AccessToken> accessToken = authorizationServer.submitRequestForAccessToken(request);

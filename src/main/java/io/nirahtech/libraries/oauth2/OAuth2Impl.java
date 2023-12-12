@@ -1,6 +1,7 @@
 package io.nirahtech.libraries.oauth2;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -27,16 +28,16 @@ final class OAuth2Impl implements OAuth2 {
 
     OAuth2Impl(final OAuth2Configuration configuration) {
         this.configuration = configuration;
-        this.resourceOwner = ResourceOwner.create(configuration.authorizationCodeUri());
-        this.authorizationServer = AuthorizationServer.create(configuration.accessTokenUri());
-        this.resourceServer = ResourceServer.create(configuration.userInfoUri());
+        this.resourceOwner = ResourceOwner.create(configuration.getAuthorizationCodeUri());
+        this.authorizationServer = AuthorizationServer.create(configuration.getAccessTokenUri());
+        this.resourceServer = ResourceServer.create(configuration.getUserInfoUri());
     }
 
     @Override
     public final AuthorizationCode generateAuthorizationCode() {
-        final AuthorizationCodeRequest request = AuthorizationCodeRequest.builder(this.configuration.clientId())
-                .redirectUri(configuration.authorizationCodeRedirectUri())
-                .scopes(configuration.scopes().toArray(new Scope[this.configuration.scopes().size()]))
+        final AuthorizationCodeRequest request = AuthorizationCodeRequest.builder(this.configuration.getClientId())
+                .redirectUri(configuration.getAuthorizationCodeRedirectUri())
+                .scopes(configuration.getScopes().toArray(new Scope[this.configuration.getScopes().size()]))
                 .build();
         this.fullAuthorizationUri = URI.create(this.resourceOwner.getUri().toString() + request.asURIParameters());
         final Optional<AuthorizationCode> code = this.resourceOwner.submitRequestForAuthorizationCode(request);
@@ -45,7 +46,7 @@ final class OAuth2Impl implements OAuth2 {
     
     @Override
     public final AccessToken generateAccessToken(final AuthorizationCode authorizationCode) {
-        final AccessTokenRequest request = new AccessTokenRequest(this.configuration.clientId(), this.configuration.clientSecret(), authorizationCode, this.configuration.scopes(), this.configuration.accessTokenRedirectUri(), this.configuration.accessType());
+        final AccessTokenRequest request = new AccessTokenRequest(this.configuration.getClientId(), this.configuration.getClientSecret(), authorizationCode, this.configuration.getScopes(), this.configuration.getAccessTokenRedirectUri(), this.configuration.getAccessType());
         this.fullAccessTokenUri = URI.create(this.authorizationServer.getUri().toString() + request.asURIParameters());
         final Optional<AccessToken> token = this.authorizationServer.submitRequestForAccessToken(request);
         return token.orElse(null);
@@ -53,9 +54,9 @@ final class OAuth2Impl implements OAuth2 {
 
     @Override
     public final Map<String, String> retrieveUserInfo(final AccessToken accessToken) {
-        final UserInfoRequest request = new UserInfoRequest(accessToken, this.configuration.userInfoUri());
+        final UserInfoRequest request = new UserInfoRequest(accessToken, this.configuration.getUserInfoUri());
         final Optional<Map<String, String>> userInfo = this.resourceServer.submitRequestForUserInfo(request);
-        return userInfo.orElse(Map.of());
+        return userInfo.orElse(new HashMap<>());
     }
 
     @Override

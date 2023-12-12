@@ -2,18 +2,20 @@ package io.nirahtech.libraries.oauth2.remotes;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
+import io.nirahtech.http.client.HttpClient;
+import io.nirahtech.http.common.HttpRequest;
+import io.nirahtech.http.common.HttpResponse;
+import io.nirahtech.http.common.HttpVerb;
 import io.nirahtech.libraries.oauth2.dto.UserInfoRequest;
 
 /**
@@ -29,24 +31,30 @@ public final class ResourceServer {
     public final Optional<Map<String, String>> submitRequestForUserInfo(final UserInfoRequest request) {
         Optional<Map<String, String>> userInfos = Optional.empty();
         StringBuilder builder = new StringBuilder(this.uri.toString());
-        builder.append("?access_token=").append(request.getAccessToken().value());
+        builder.append("?access_token=").append(request.getAccessToken().getValue());
         final HttpRequest httpRequest = HttpRequest.newBuilder(URI.create(builder.toString()))
-                .GET()
-                .header("Authorization", String.format("Bearer: %s", request.getAccessToken().value()))
+                .method(HttpVerb.GET)
+                .headers("Authorization", String.format("Bearer: %s", request.getAccessToken().getValue()))
                 .build();
-        HttpResponse<String> httpResponse = null;
+        HttpResponse httpResponse = null;
         final HttpClient httpClient = HttpClient.newHttpClient();
-        try {
-            httpResponse = httpClient.send(httpRequest, BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
+        httpResponse = httpClient.send(httpRequest);
+        // try {
+        // } catch (IOException | InterruptedException e) {
+        //     e.printStackTrace();
+        // }
         if (Objects.nonNull(httpResponse) && httpResponse.statusCode() >= 200 && httpResponse.statusCode() <= 299) {
-            if (!httpResponse.body().isEmpty()) {
-                System.out.println(httpResponse.body());
-                Gson gson = new GsonBuilder().create();
-                final Map<String, String> json = gson.fromJson(httpResponse.body(), new TypeToken<Map<String, String>>(){}.getType());
-                userInfos = Optional.of(json);
+            try {
+                if (httpResponse.body().available() > 0) {
+                    byte[] body = new byte[httpResponse.body().available()];
+                    httpResponse.body().read(body);
+                    Gson gson = new GsonBuilder().create();
+                    final Map<String, String> json = gson.fromJson(new String(body, StandardCharsets.UTF_8), new TypeToken<Map<String, String>>(){}.getType());
+                    userInfos = Optional.of(json);
+                }
+            } catch (JsonSyntaxException | IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
         } else if (Objects.nonNull(httpResponse)) {
             System.out.println(this.uri);
